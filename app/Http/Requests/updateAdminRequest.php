@@ -23,12 +23,12 @@ class updateAdminRequest extends FormRequest
      */
     public function rules(): array
     {
-        $adminId = $this->route('id');
+
+        $adminId = $this->route('admin_id');
         return [
             'first_name' => 'sometimes|required|string|min:2|max:50',//sometimes|required:optionnels mais validés s’ils sont présents
             'last_name' => 'sometimes|required|string|min:2|max:50',
-            'email' => ['sometimes','required','email','max:255',
-                Rule::unique('users', 'email')->ignore($adminId),],
+            'email' => 'required|email|unique:users,email,'.$adminId,
             'password' => ['sometimes','nullable','min:8','max:64','regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/' ],
             'phone' => 'sometimes|string|min:8|max:20',
             'gender' => ['sometimes', 'required', Rule::enum(Gender::class)],

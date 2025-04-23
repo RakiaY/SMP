@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens; 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use App\Models\Role;
 
 
 
@@ -67,6 +69,9 @@ class User extends Authenticatable
         ];
     }
 
+    
+
+    
     function isAdmin()
     {
         return $this->hasRole('Admin');
@@ -107,4 +112,5 @@ class User extends Authenticatable
     {
         return $this->status == 'in progress';
     }
+
 }

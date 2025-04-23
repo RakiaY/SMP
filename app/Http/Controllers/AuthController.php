@@ -7,34 +7,36 @@ use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\LoginResource;
 
 class AuthController extends Controller
 {
+
     public function login(LoginRequest $request){
-        dd($request->all());
-        $Identifiants = $request->validated();
 
-        //tenter de se connecter avec Auth::attempt
-        if (!Auth::attempt($Identifiants)) {
-             response()->json([
-                'success' => false,
-                'message' => 'Identifiants invalides'
-        ], 401);
-        }
+    $data=$request->validated();
 
-        //recuperer le user connecte
-        $user = Auth::User();
-        $token = $this->createTokenForUser($user);
-
+    // Rechercher l'utilisateur par email
+    $user = User::where('email', $request->email)->first();
+   
+    // Vérifier le mot de passe
+    if (!$user || !Hash::check($request->password, $user->password)) {
         return response()->json([
-            "data" => [
-                "user"=>$user,
-                "token"=>$token
-
-            ],
-            'message' => 'Connexion réussie',
-        ]);
+            'success' => false,
+            'message' => ' Invalid credentials'
+        ], 401);
     }
+    // Générer un token 
+    $token = $user->createToken('token')->plainTextToken;
+
+    // Retourner le token dans la réponse
+    return response()->json([
+        'success' => true,
+        'user_information' => new LoginResource($user),
+        'token' => $token,
+        'message' => 'User logged in successfully'
+    ]);
+}
 
         protected function createTokenForUser($user){
             $token = $user->createToken('auth_token')->plainTextToken;

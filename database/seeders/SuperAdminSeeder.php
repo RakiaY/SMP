@@ -21,8 +21,8 @@ class SuperAdminSeeder extends Seeder
         $user = User::create([
             'first_name' => 'Rakia ',
             'last_name' => ' Younes',
-            'email' => 'younesrakia78@gmail.com',
-            'password' => bcrypt('younesrakia123')
+            'email' => 'rakiayounes@gmail.com',
+            'password' => 'rakia123'
         ]);
 
         // Récupérer le rôle super_admin

@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Enums\Gender;
-
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
 class addAdminRequest extends FormRequest
@@ -29,9 +30,16 @@ class addAdminRequest extends FormRequest
             'last_name' => 'required|string|min:2|max:50',
             'email' => 'required|email|unique:users,email|max:255',
             'password' => 'required|min:8|max:64|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
-            //minimum 1 minuscule, 1 majuscule et 1 chiffre'
-            'phone' => 'string|min:8|max:20',
-            'gender'=>['required', Rule::enum(Gender::class)],
-             ];
+            'phone' => 'nullable|string|min:8|max:20',
+            'gender' => ['required', Rule::enum(Gender::class)], // Assurez-vous que Gender::class existe
+        ];
     }
+    protected function failedValidation(Validator $validator)
+{
+    throw new HttpResponseException(response()->json([
+        'success' => false,
+        'message' => 'Validation errors',
+        'errors' => $validator->errors()
+    ], 422));
+}
 }
