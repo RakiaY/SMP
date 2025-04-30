@@ -50,8 +50,7 @@ class SuperAdminController extends Controller
             'status' => $admin->status,
         ]);
     }
-    public function updateAdmin($admin_id, Request $request)
-    {
+    public function updateAdmin($admin_id, Request $request){
     $admin = User::role('admin')->findOrFail($admin_id);
 
     $validator = Validator::make($request->all(), [
@@ -186,17 +185,20 @@ class SuperAdminController extends Controller
             'success' => true,
             'message' => 'Liste des administrateurs récupérée avec succès',
             'admins' => AdminResource::collection($admins),
-            'pagination' => [
+            /*'pagination' => [
                 'total' => $admins->total(),
                 'per_page' => $admins->perPage(),
                 'current_page' => $admins->currentPage(),
                 'last_page' => $admins->lastPage(),
-            ]
+            ]*/
         ]);
     }
     public function getAdminById($admin_id){
-        $admin = User::role('admin')->findOrfail($admin_id);
+        $admin = User::withTrashed()->find($admin_id); // important !
 
+        if (!$admin) {
+            return response()->json(['message' => 'Admin non trouvé'], 404);
+        }
          return response()->json([
         'admin'=> new AdminResource($admin),
         'permissions' => $admin->permissions->pluck('name'), 
@@ -206,13 +208,23 @@ class SuperAdminController extends Controller
     ]);
     }
     public function getTrashedadmins(){
-        $trashedAdmins=User::role('admin')->onlyTrashed()->get();
-        return response()->json ([
+    $trashedAdmins = User::role('admin')->onlyTrashed()->get();
+
+    if ($trashedAdmins->isEmpty()) {
+        return response()->json([
             'success' => true,
-            'message' =>'Liste des administrateurs supprimés récupérée avec succès',
-            'admins' => AdminResource::collection($trashedAdmins),
-        ]);
+            'message' => 'Aucun administrateur supprimé trouvé.',
+            'admins' => []
+        ], 200); 
     }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Liste des administrateurs supprimés récupérée avec succès',
+        'admins' => AdminResource::collection($trashedAdmins),
+    ], 200);
+}
+
     public function restoreTrashedAdmin($admin_id) {
         $admin=User::role('admin')->withTrashed()->findOrfail($admin_id);
         $admin->restore();

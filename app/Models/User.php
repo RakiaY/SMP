@@ -39,7 +39,8 @@ class User extends Authenticatable
         'personalQualities',
         'skills',
         'ACACED',
-        'status'
+        'status',
+        'deleted_at',
     ];
     public function setPasswordAttribute($mdp)
     {

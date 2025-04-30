@@ -32,12 +32,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/admins/update/{admin_id}', [SuperAdminController::class, 'updateAdmin']);
         Route::put('/admins/updateStatus/{admin_id}', [SuperAdminController::class, 'updateStatusAdmin']);
         Route::delete('/admins/delete/{admin_id}', [SuperAdminController::class, 'deleteAdmin']);
-        Route::get('/admins/trashed', [SuperAdminController::class, 'getTrashedadmins']);
+        Route::get('/admins/trashed/tr', [SuperAdminController::class, 'getTrashedadmins']); 
         Route::get('/admins/trashed/{admin_id}', [SuperAdminController::class, 'getTrashedAdmin']);
-        Route::get('/admins/trashed/{admin_id}/restore', [SuperAdminController::class, 'restoreTrashedAdmin']);
-        Route::get('/admins/trashed/{admin_id}/forceDelete', [SuperAdminController::class, 'forceDeleteTrashedAdmin']);
+        Route::get('/admins/restore/{admin_id}', [SuperAdminController::class, 'restoreTrashedAdmin']);
+        Route::get('/admins/forceDelete/{admin_id}', [SuperAdminController::class, 'forceDeleteTrashedAdmin']);
     });
 });
 
 
-//Route::middleware(['auth:sanctum', 'super_admin'])->group(function () {
